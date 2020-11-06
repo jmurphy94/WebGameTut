@@ -31,8 +31,9 @@ function startGame () {
 function component(width, height, color, x, y) {
     this.width = width;
     this.height = height;
-    this.speedX = 0;
-    this.speedY = 0;
+    this.velX = 0;
+    this.velY = 0;
+    this.accel = 1;
     this.x = x;
     this.y = y;
     this.update = function() {
@@ -41,8 +42,12 @@ function component(width, height, color, x, y) {
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
     this.newPos = function() {
-        this.x += this.speedX;
-        this.y += this.speedY;
+        if ((this.x + this.velX + 30) < gameCanvas.canvas.width && this.x + this.velX > 0) {
+            this.x += this.velX;
+        }
+        if ((this.y + this.velY + 30) < gameCanvas.canvas.height && this.y + this.velY > 0) {
+            this.y += this.velY;
+        }
     }
 }
 
@@ -55,29 +60,38 @@ function updateGameCanvas() {
 }
 
 function handleKeyPress() {
-    if (gameCanvas.keys["ArrowUp"]) {moveUp();}
-    if (gameCanvas.keys["ArrowDown"]) {moveDown();}
-    if (gameCanvas.keys["ArrowLeft"]) {moveLeft();}
-    if (gameCanvas.keys["ArrowRight"]) {moveRight();}
+    if (gameCanvas.keys["ArrowUp"]) {
+        if (gamePiece.velY > -7) {
+            gamePiece.velY -= gamePiece.accel;
+        }
+    }
+    if (gameCanvas.keys["ArrowDown"]) {
+        if (gamePiece.velY < 7) {
+            gamePiece.velY += gamePiece.accel;
+        }
+    }
+    if (gameCanvas.keys["ArrowLeft"]) {
+        if (gamePiece.velX > -7) {
+            gamePiece.velX -= gamePiece.accel;
+        }
+    }
+    if (gameCanvas.keys["ArrowRight"]) {
+        if (gamePiece.velX < 7) {
+            gamePiece.velX += gamePiece.accel;
+        }
+    }
 } 
 
-function moveUp() {
-    gamePiece.speedY -= 1;
-}
-
-function moveDown() {
-    gamePiece.speedY += 1;
-}
-
-function moveLeft() {
-    gamePiece.speedX -= 1;
-}
-
-function moveRight() {
-    gamePiece.speedX += 1;
-}
-
 function moveStop() {
-    gamePiece.speedX = 0;
-    gamePiece.speedY = 0;
+    if (gamePiece.velY < 0 && !gameCanvas.keys["ArrowUp"]) {
+        gamePiece.velY += 1;
+    } else if (gamePiece.velY > 0 && !gameCanvas.keys["ArrowDown"]) {
+        gamePiece.velY -= 1;
+    }
+
+    if (gamePiece.velX < 0 && !gameCanvas.keys["ArrowLeft"]) {
+        gamePiece.velX += 1;
+    } else if (gamePiece.velX > 0 && !gameCanvas.keys["ArrowRight"]) {
+        gamePiece.velX -= 1;
+    }
 }
